@@ -2,7 +2,22 @@
 
 LRESULT WINAPI _WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-std::mutex mutex;
+void FatalError(const char* msg, ...)
+{
+    char v2[4096];
+
+
+
+    va_list va;
+
+    va_start(va, msg);
+    _vsnprintf_s(v2, 0x1000u, msg, va);
+    v2[4095] = 0;
+
+
+    MessageBoxA(NULL, v2, "Fatal Error!", MB_ICONERROR);
+    hWnd_main.ExitApplication();
+}
 
 bool MainWindow::InitializeWindow(const char* p_szTitle, HINSTANCE hInst, WNDPROC _wndProc)
 {
@@ -22,6 +37,8 @@ bool MainWindow::InitializeWindow(const char* p_szTitle, HINSTANCE hInst, WNDPRO
     wc.lpszClassName = p_szTitle;
     wc.hIconSm = 0;
 
+    RenderFunctions.clear();
+    window.open = true;
    // szTitle = std::string(p_szTitle);
 
 
@@ -30,6 +47,8 @@ bool MainWindow::InitializeWindow(const char* p_szTitle, HINSTANCE hInst, WNDPRO
     hwnd = ::CreateWindowA(wc.lpszClassName, p_szTitle, WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL);
 
     if (!hwnd) {
+        
+        FatalError("::CreateWindowA(wc.lpszClassName, p_szTitle, WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, NULL, NULL, wc.hInstance, NULL)\nreturned NULL");
         return false;
     }
 
@@ -56,15 +75,16 @@ bool MainWindow::InitializeWindow(const char* p_szTitle, HINSTANCE hInst, WNDPRO
         //createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
         D3D_FEATURE_LEVEL featureLevel;
         const D3D_FEATURE_LEVEL featureLevelArray[2] = { D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_0, };
-        if (D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext) != S_OK)
+        if (D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext) != S_OK) {
+            FatalError("(D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, createDeviceFlags, featureLevelArray, 2, D3D11_SDK_VERSION, &sd, &g_pSwapChain, &g_pd3dDevice, &featureLevel, &g_pd3dDeviceContext) != S_OK)");
             return false;
+        }
 
         CreateRenderTarget();
         return true;
 	
 	};
     if (!CreateDevice()) {
-
         CleanupDeviceD3D();
         ::UnregisterClass(wc.lpszClassName, wc.hInstance);
         return false;
@@ -80,18 +100,24 @@ bool MainWindow::InitializeWindow(const char* p_szTitle, HINSTANCE hInst, WNDPRO
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+    //io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
 
     // Setup Platform/Renderer backends
     if (!ImGui_ImplWin32_Init(hwnd)) {
+        FatalError("!ImGui_ImplWin32_Init(hwnd)");
         return false;
     }
 
     if (!ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext)) {
+        FatalError("!ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext)");
         return false;
     }
 
+    sys_baseTime = timeGetTime();
+    root_directory = fs::GetRootDirectory();
+    Font.LoadHardcodedFonts();
+   // MessageBoxA(NULL, fs::GetRootDirectory().c_str(), "Root Directory", MB_ICONEXCLAMATION);
 
     return true;
 
@@ -106,6 +132,15 @@ void MainWindow::KillWindow()
     CleanupDeviceD3D();
     ::DestroyWindow(hwnd);
     ::UnregisterClass(wc.lpszClassName, wc.hInstance);
+}
+void MainWindow::ExitApplication()
+{
+    Font.~Font_s();
+    ProcList::ProcWindow.~ProcessWindow();
+    KillWindow();
+
+    exit(-1);
+
 }
 void MainWindow::CleanupRenderTarget()
 {
@@ -130,11 +165,20 @@ void MainWindow::CleanupDeviceD3D()
 }
 void MainWindow::AddRenderFunction(std::function<void()> fnc)
 {
+    if (fnc == nullptr) {
+        FatalError("AddRenderFunction(std::function<void()> fnc): fnc == nullptr");
+        return;
+    }
+    //char buff[42];
+    //sprintf_s(buff, "fncptr is at 0x%p\n", fnc);
+
+    //MessageBoxA(NULL, "fnc", buff, MB_OK);
+
     RenderFunctions.push_back(fnc);
 }
 LRESULT WINAPI MainWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-    MainWindow* wnd = hWnd_main;
+    MainWindow* wnd = &hWnd_main;
 
     if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
         return true;
@@ -171,8 +215,11 @@ LRESULT WINAPI MainWindow::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
     }
     return ::DefWindowProc(hWnd, msg, wParam, lParam);
 }
-bool MainWindow::Render(ImGuiIO& io, MSG& msg, bool& open)
+bool MainWindow::Render(ImGuiIO& io, MSG& msg)
 {
+
+    if (!ImGui::GetCurrentContext())
+        return false;
 
     static const ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -181,39 +228,28 @@ bool MainWindow::Render(ImGuiIO& io, MSG& msg, bool& open)
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    //for (auto& i : RenderFunctions)
-    //    i();
+    ImGuiStyle* style = &ImGui::GetStyle();
 
-    ImGui::Begin(wc.lpszClassName, &open);
-    static float t(0.f);
-    static bool go_backwards;
+    ImGui::PushFont(Font.fonts[SegoeUI_SemiBoldSM].first);
+
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style->FramePadding.x, style->FramePadding.y*3));
+
+    ImGui::Begin(wc.lpszClassName, 0, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
 
     
 
-    if (t > 1.f)
-        go_backwards = true;
+    for (auto& i : RenderFunctions)
+        i();
 
-    else if (t < 0.f)
-        go_backwards = false;
+    hWnd_main.window.Pos = ImGui::GetWindowPos();
+    hWnd_main.window.Size = ImGui::GetWindowSize();
 
-    if (go_backwards)
-        t -= 0.01;
-    else
-        t += 0.01;
-
-    hWnd_main->Size = ImGui::GetWindowSize();
-    hWnd_main->Pos = ImGui::GetWindowPos();
-
-    float screenPosX = std::lerp(hWnd_main->Pos.x, hWnd_main->Pos.x + Size.x, t);
-    float screenPosY = std::lerp(hWnd_main->Pos.y, hWnd_main->Pos.y + Size.y, t);
-
-
-    ImGui::GetWindowDrawList()->AddText(ImVec2(screenPosX, screenPosY), IM_COL32(255, 0, 0, 255),"hello");
-
+    window.CornerActionButtons();
 
     ImGui::End();
-    
-    
+    ImGui::PopStyleVar();
+
+    ImGui::PopFont();
 
     // Rendering
     ImGui::Render();
@@ -232,6 +268,66 @@ bool MainWindow::Render(ImGuiIO& io, MSG& msg, bool& open)
     g_pSwapChain->Present(1, 0); // Present with vsync
     //g_pSwapChain->Present(0, 0); // Present without vsync
 
-    return open;
+    return window.open;
 
+}
+void MainWindow::SetMenuStyle()
+{
+    ImGuiStyle* style = &ImGui::GetStyle();
+
+   // style->WindowPadding = ImVec2(15, 15);
+    style->WindowRounding = 5.0f;
+    //style->FramePadding = ImVec2(5, 5);
+    style->FrameRounding = 4.0f;
+    style->ItemSpacing = ImVec2(12, 8);
+    style->ItemInnerSpacing = ImVec2(8, 6);
+    style->IndentSpacing = 25.0f;
+    style->ScrollbarSize = 15.0f;
+    style->ScrollbarRounding = 9.0f;
+    style->GrabMinSize = 5.0f;
+    style->GrabRounding = 3.0f;
+
+    style->Colors[ImGuiCol_Text] = ImVec4(0.80f, 0.80f, 0.83f, 1.00f);
+    style->Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+    style->Colors[ImGuiCol_WindowBg] = ImVec4(0.12f, 0.12f, 0.12f, 1.00f);
+    //style->Colors[ImGuiCol_ChildWindowBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+    style->Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+    style->Colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.88f);
+    style->Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
+    style->Colors[ImGuiCol_FrameBg] = style->Colors[ImGuiCol_WindowBg];
+    style->Colors[ImGuiCol_FrameBgHovered] = style->Colors[ImGuiCol_FrameBg];
+    style->Colors[ImGuiCol_FrameBgActive] = style->Colors[ImGuiCol_FrameBg];
+    style->Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+    style->Colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
+    style->Colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+    style->Colors[ImGuiCol_MenuBarBg] = ImVec4(0.13f, 0.13f, 0.13f, 1.00f);
+    style->Colors[ImGuiCol_ScrollbarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+    style->Colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+    style->Colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+    style->Colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+    //style->Colors[ImGuiCol_ComboBg] = ImVec4(0.19f, 0.18f, 0.21f, 1.00f);
+    style->Colors[ImGuiCol_CheckMark] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+    style->Colors[ImGuiCol_SliderGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+    style->Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+    style->Colors[ImGuiCol_Button] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+    style->Colors[ImGuiCol_ButtonHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+    style->Colors[ImGuiCol_ButtonActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+    style->Colors[ImGuiCol_Header] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+    style->Colors[ImGuiCol_HeaderHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+    style->Colors[ImGuiCol_HeaderActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+    //style->Colors[ImGuiCol_Column] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+    //style->Colors[ImGuiCol_ColumnHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+    //style->Colors[ImGuiCol_ColumnActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+    style->Colors[ImGuiCol_ResizeGrip] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+    style->Colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+    style->Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+    //style->Colors[ImGuiCol_CloseButton] = ImVec4(0.40f, 0.39f, 0.38f, 0.16f);
+    //style->Colors[ImGuiCol_CloseButtonHovered] = ImVec4(0.40f, 0.39f, 0.38f, 0.39f);
+    //style->Colors[ImGuiCol_CloseButtonActive] = ImVec4(0.40f, 0.39f, 0.38f, 1.00f);
+    style->Colors[ImGuiCol_PlotLines] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
+    style->Colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+    style->Colors[ImGuiCol_PlotHistogram] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
+    style->Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+    style->Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
+    //style->Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
 }

@@ -877,6 +877,10 @@ namespace ImGui
     IMGUI_API bool          IsAnyItemFocused();                                                 // is any item focused?
     IMGUI_API ImVec2        GetItemRectMin();                                                   // get upper-left bounding rectangle of the last item (screen space)
     IMGUI_API ImVec2        GetItemRectMax();                                                   // get lower-right bounding rectangle of the last item (screen space)
+    IMGUI_API void          SetItemRectMin(ImVec2 p);                                             // set upper-left bounding rectangle of the last item (screen space)
+    IMGUI_API void          SetItemRectMax(ImVec2 p);                                             // set lower-right bounding rectangle of the last item (screen space)
+    IMGUI_API void          SetItemRectSize(ImVec2 mins, ImVec2 maxs);                                            // set size of last item
+
     IMGUI_API ImVec2        GetItemRectSize();                                                  // get size of last item
     IMGUI_API void          SetItemAllowOverlap();                                              // allow last item to be overlapped by a subsequent item. sometimes useful with invisible buttons, selectables, etc. to catch unused area.
 

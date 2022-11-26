@@ -6,8 +6,9 @@
 #include "EpicEngine.h"
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-inline LPARAM _lParam;
-inline WPARAM _wParam;
+
+void FatalError(const char* msg, ...);
+
 class MainWindow
 {
 public:
@@ -17,6 +18,7 @@ public:
   //  WNDPROC wndProc;
 
     bool InitializeWindow(const char* p_szTitle, HINSTANCE hInst, WNDPROC _wndProc);
+    void ExitApplication();
     void KillWindow();
     static LRESULT WINAPI WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
     void CleanupRenderTarget();
@@ -24,8 +26,11 @@ public:
     void CleanupDeviceD3D();
     HWND GetWindowHandle() { return hwnd; }
     void AddRenderFunction(std::function<void()> fnc);
-    bool initialized;
-    bool Render(ImGuiIO& io, MSG& msg, bool& open);
+    void SetMenuStyle();
+
+    AppWindow window;
+    
+    bool Render(ImGuiIO& io, MSG& msg);
     WNDCLASSEXA wc;
 
 //private:
@@ -37,13 +42,14 @@ public:
 //protected:
      HWND hwnd;
      std::string szTitle;
-     std::vector<std::function<void()>> RenderFunctions;
-
-     ImVec2 Size;
-     ImVec2 Pos;
+     std::vector<std::function<void()>> RenderFunctions{};
+     bool initialized;
+     //ImVec2 Size;
+     //ImVec2 Pos;
+     //bool active; //if false the application quits
     
 };
 
-inline MainWindow* hWnd_main;
+inline MainWindow hWnd_main;
 
 #endif

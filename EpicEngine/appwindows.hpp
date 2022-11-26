@@ -4,12 +4,15 @@
 #include "EpicEngine.h"
 
 
-class SubWindow 
+class AppWindow  
 {
 public:
-	ImVec2 Size;
-	ImVec2 Position;
 
+	void CornerActionButtons();
+
+	ImVec2 Size;
+	ImVec2 Pos;
+	bool open;
 
 
 private:

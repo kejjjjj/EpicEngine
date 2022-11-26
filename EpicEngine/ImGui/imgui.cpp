@@ -5756,13 +5756,30 @@ ImVec2 ImGui::GetItemRectMax()
     ImGuiContext& g = *GImGui;
     return g.LastItemData.Rect.Max;
 }
+void ImGui::SetItemRectMin(ImVec2 p)
+{
+    ImGuiContext& g = *GImGui;
 
+    g.LastItemData.Rect.Min = p;
+}
+
+void ImGui::SetItemRectMax(ImVec2 p)
+{
+    ImGuiContext& g = *GImGui;
+    g.LastItemData.Rect.Max = p;
+}
 ImVec2 ImGui::GetItemRectSize()
 {
     ImGuiContext& g = *GImGui;
     return g.LastItemData.Rect.GetSize();
 }
+void ImGui::SetItemRectSize(ImVec2 mins, ImVec2 maxs)
+{
+    ImRect rect(mins.x, mins.y, maxs.x, maxs.y);
 
+    ImGuiContext& g = *GImGui;
+    g.LastItemData.Rect = rect;
+}
 bool ImGui::BeginChildEx(const char* name, ImGuiID id, const ImVec2& size_arg, bool border, ImGuiWindowFlags flags)
 {
     ImGuiContext& g = *GImGui;

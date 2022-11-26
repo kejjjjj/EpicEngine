@@ -28,6 +28,12 @@
     <Filter Include="Header Files\lib\ImGui">
       <UniqueIdentifier>{f74256ee-2a80-4198-a7ec-d79dd5abb59c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\time">
+      <UniqueIdentifier>{f5b29913-a86e-4c88-afd3-d7c6ab2c9987}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\filesystem">
+      <UniqueIdentifier>{f5ed73cf-41fb-45b7-8949-5dc8b3c480cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -81,6 +87,21 @@
     <ClInclude Include="appwindows.hpp">
       <Filter>Source Files\winapi</Filter>
     </ClInclude>
+    <ClInclude Include="activeprocess.hpp">
+      <Filter>Source Files\processes</Filter>
+    </ClInclude>
+    <ClInclude Include="processlist.h">
+      <Filter>Source Files\processes</Filter>
+    </ClInclude>
+    <ClInclude Include="timing.hpp">
+      <Filter>Source Files\time</Filter>
+    </ClInclude>
+    <ClInclude Include="filetools.hpp">
+      <Filter>Source Files\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="winfont.hpp">
+      <Filter>Source Files\filesystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EpicEngine.cpp">
@@ -121,6 +142,21 @@
     </ClCompile>
     <ClCompile Include="appwindows.cpp">
       <Filter>Source Files\winapi</Filter>
+    </ClCompile>
+    <ClCompile Include="activeprocess.cpp">
+      <Filter>Source Files\processes</Filter>
+    </ClCompile>
+    <ClCompile Include="processlist.cpp">
+      <Filter>Source Files\processes</Filter>
+    </ClCompile>
+    <ClCompile Include="timing.cpp">
+      <Filter>Source Files\time</Filter>
+    </ClCompile>
+    <ClCompile Include="filetools.cpp">
+      <Filter>Source Files\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="winfont.cpp">
+      <Filter>Source Files\filesystem</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
