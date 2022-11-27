@@ -24,9 +24,9 @@ void MW::TabBarAction(const char* text, std::function<void()> a)
 
 void MW::RenderTabBar()
 {
-	ImGui::NewLine();
+	//ImGui::NewLine();
 
-	ImGuiStyle* s = &ImGui::GetStyle();
+	//static ImGuiStyle* s = &ImGui::GetStyle();
 	
 	if(ImGui::BeginMenuBar()) {
 
@@ -40,25 +40,4 @@ void MW::RenderTabBar()
 
 	}ImGui::EndMenuBar();
 	
-}
-void AppWindow::CornerActionButtons()
-{
-	ImVec2 bmins = ImVec2(Pos.x + Size.x - 50, Pos.y + 1);
-	ImVec2 bmaxs = ImVec2(Pos.x + Size.x - 1, Pos.y + ImGui::GetStyle().FramePadding.y * 4);
-	float col = 0;
-
-	if (ImGui::IsHovered(bmins, bmaxs)) {
-		col = 255;
-	
-	}
-
-	ImVec2 midpoint = ImVec2(bmins.x + (bmaxs.x - bmins.x), bmins.y + (bmaxs.y - bmins.y));
-
-	ImGui::PushFont(Font.fonts[SegoeUI_SemiBoldM].first);
-	ImGui::GetForegroundDrawList()->AddRectFilled(bmins, bmaxs, IM_COL32(col, 0, 0, 255));
-	ImGui::GetForegroundDrawList()->AddText(ImVec2(bmins.x + 15, bmins.y-2), IM_COL32(255, 255, 255, 255), "X");
-	ImGui::PopFont();
-	if (ImGui::IsClicked(bmins, bmaxs)) {
-		this->open = false;
-	}
 }

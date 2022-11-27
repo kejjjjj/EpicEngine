@@ -228,7 +228,7 @@ bool MainWindow::Render(ImGuiIO& io, MSG& msg)
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
 
-    ImGuiStyle* style = &ImGui::GetStyle();
+    static ImGuiStyle* style = &ImGui::GetStyle();
 
     ImGui::PushFont(Font.fonts[SegoeUI_SemiBoldSM].first);
 
@@ -245,6 +245,13 @@ bool MainWindow::Render(ImGuiIO& io, MSG& msg)
     hWnd_main.window.Size = ImGui::GetWindowSize();
 
     window.CornerActionButtons();
+    
+    ImGui::TextCentered("%.2f fps (%.2f)", io.Framerate, 1000.f / io.Framerate);
+
+    const float frametime = 1000.f / io.Framerate;
+
+    if (frametime < 16.7)
+        Sleep((int)(25.7f - frametime));
 
     ImGui::End();
     ImGui::PopStyleVar();
@@ -290,7 +297,7 @@ void MainWindow::SetMenuStyle()
     style->Colors[ImGuiCol_Text] = ImVec4(0.80f, 0.80f, 0.83f, 1.00f);
     style->Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
     style->Colors[ImGuiCol_WindowBg] = ImVec4(0.12f, 0.12f, 0.12f, 1.00f);
-    //style->Colors[ImGuiCol_ChildWindowBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+    style->Colors[ImGuiCol_ChildBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
     style->Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
     style->Colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.88f);
     style->Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);

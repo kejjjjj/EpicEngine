@@ -52,28 +52,31 @@ DWORD ProcList::GetAvailableProcesses(std::vector<WProcess32>& Processes)
 
 }
 
-void ProcessWindow::OnDrawProcess(WProcess32* i)
+WProcess32* ProcessWindow::OnDrawProcess(WProcess32* i)
 {
-	static WProcess32* lastSelected = i;
+
+	static WProcess32* lastSelected = 0;
 	static DWORD lastClicked = Sys_MilliSeconds();
 
 	std::string text = std::format("{:X}-{}", i->ID, i->name);
-	ImGui::BeginGroup();
-	ImGui::PushItemWidth(300);
-	ImGui::Text("%s.\t\t\t\t\t\t\t\t\t\t\t\t", text.c_str());
-	ImGui::GetCurrentContext();
-	
-	ImGui::EndGroup();
+	ImGui::Text("%s", text.c_str());
 
 	const ImVec2 min = ImGui::GetItemRectMin();
 	const ImVec2 max = ImGui::GetItemRectMax();
 
+	const ImVec2 bmins = ImVec2(min.x, min.y - ImGui::GetStyle().FramePadding.y / 2);
+	const ImVec2 bmaxs = ImVec2(min.x + window.Size.x, max.y + ImGui::GetStyle().FramePadding.y / 2);
+
+
 	if (i == lastSelected) {
 
-		ImGui::GetWindowDrawList()->AddRectFilled(ImVec2(min.x, min.y - ImGui::GetStyle().FramePadding.y/2), ImVec2(max.x, max.y + ImGui::GetStyle().FramePadding.y/2), IM_COL32(50, 255, 255, 170));
+		ImGui::GetWindowDrawList()->AddRectFilled(bmins, bmaxs, IM_COL32(50, 255, 255, 170));
 	}
 
-	if (ImGui::IsItemClicked()) {
+	if (ImGui::IsClicked(bmins, bmaxs) && ImGui::IsHovered(window.Pos, ImVec2(window.Pos.x + window.Size.x, window.Pos.y + 440))) {
+
+		//ImGui::TextCentered("isClicked: %i", ImGui::IsClicked(bmins, bmaxs));
+
 		lastSelected = i;
 
 		if (Sys_MilliSeconds() - lastClicked < 200) {
@@ -83,12 +86,13 @@ void ProcessWindow::OnDrawProcess(WProcess32* i)
 		}
 
 		lastClicked = Sys_MilliSeconds();
-
+		//return lastSelected;
 
 
 
 
 	}
+	return lastSelected;
 
 }
 void ProcessWindow::Render()
@@ -100,20 +104,32 @@ void ProcessWindow::Render()
 
 	ImGui::Begin("Select Process", 0, ImGuiWindowFlags_NoCollapse);
 
+
+	static WProcess32* lastSelected;
+
+	ImGui::BeginChild("cock", ImVec2(PW->window.Size.x, 400), true);
+
+
 	for (auto& i : PW->Processes) {
-		PW->OnDrawProcess(&i);
+		lastSelected = PW->OnDrawProcess(&i);
 	}
+	ImGui::EndChild();
+
 
 	PW->window.Pos = ImGui::GetWindowPos();
 	PW->window.Size = ImGui::GetWindowSize();
 	
+	if (ImGui::ButtonCentered("Open", 0.45f)) {
+		CurrentProcess = lastSelected;
+		PW->OnKillWindow();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Cancel"))
+		PW->window.open = false;
+
 	PW->window.CornerActionButtons();
 
 	ImGui::End();
-
-	if (GetAsyncKeyState(VK_HOME) & 1) {
-		printf("pos(%.1f, %.1f)\nsize(%.1f,%.1f)\n\n", PW->window.Pos.x, PW->window.Pos.y, PW->window.Size.x, PW->window.Size.y);
-	}
 
 }
 void ProcessWindow::OnCreateWindow()

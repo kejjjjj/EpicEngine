@@ -23,7 +23,7 @@ public:
 	~ProcessWindow() { Processes.clear(); }
 
 	static void Render();
-	void OnDrawProcess(WProcess32* prc);
+	WProcess32* OnDrawProcess(WProcess32* prc);
 	void OnKillWindow();
 	void OnCreateWindow();
 

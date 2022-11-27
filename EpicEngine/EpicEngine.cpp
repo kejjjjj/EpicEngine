@@ -6,9 +6,9 @@
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
-    FILE* _con;
-    AllocConsole();
-    freopen_s(&_con, "CONOUT$", "w", stdout);
+    //FILE* _con;
+    //AllocConsole();
+    //freopen_s(&_con, "CONOUT$", "w", stdout);
 
     std::cout << "requesting to inject\n";
 
