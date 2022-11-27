@@ -14,7 +14,6 @@ public:
 	ImVec2 Pos;
 	bool open;
 
-
 private:
 };
 

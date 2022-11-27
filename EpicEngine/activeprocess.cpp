@@ -1,24 +1,40 @@
 #include "EpicEngine.h"
 
-void AppWindow::CornerActionButtons()
+//purpose:
+//keep track of if the opened process is open
+void ActiveProcess::MonitorActiveProcess()
 {
-	ImVec2 bmins = ImVec2(Pos.x + Size.x - 50, Pos.y + 1);
-	ImVec2 bmaxs = ImVec2(Pos.x + Size.x - 1, Pos.y + ImGui::GetStyle().FramePadding.y * 4);
-	float a = 0;
+	if (!CurrentProcess.procdata.handle)
+		return;
 
-	if (ImGui::IsHovered(bmins, bmaxs)) {
-		a = 255;
-
+	//window closed
+	if (!CurrentProcess.ProcessRunning()) {
+		CurrentProcess.OnProcessKilled();
 	}
 
-	ImVec2 midpoint = ImVec2(bmins.x + (bmaxs.x - bmins.x)/3, bmins.y-3);
+}
 
-	ImGui::PushFont(Font.fonts[SegoeUI_LightM].first);
-	ImGui::GetForegroundDrawList()->AddRectFilled(bmins, bmaxs, IM_COL32(255, 0, 0, a));
-	ImGui::GetForegroundDrawList()->AddText(midpoint, IM_COL32(255, 255, 255, 255), "X");
-	ImGui::PopFont();
+bool ActiveProcess::ProcessRunning() const
+{
+	if (!procdata.handle)
+		return false;
 
-	if (ImGui::IsClicked(bmins, bmaxs)) {
-		this->open = false;
+	DWORD exitcode;
+	GetExitCodeProcess(procdata.handle, &exitcode);
+
+	return exitcode == STILL_ACTIVE;
+}
+void ActiveProcess::OnProcessKilled()
+{
+	if (procdata.handle) {
+		try {
+			CloseHandle(procdata.handle);
+		}
+		catch (std::exception& ex) {
+			std::cout << "Exception caught: " << ex.what() << '\n';
+		}
 	}
+	procdata.handle = nullptr;
+
+	std::cout << "OnProcessKilled(): STILL_ACTIVE != TRUE\n";
 }

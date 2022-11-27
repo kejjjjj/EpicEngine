@@ -20,13 +20,16 @@ class ProcessWindow
 {
 public:
 
+	ProcessWindow() : window(){}
 	~ProcessWindow() { Processes.clear(); }
 
 	static void Render();
-	WProcess32* OnDrawProcess(WProcess32* prc);
+	WProcess32* OnDrawProcess(WProcess32* prc, const float height);
 	void OnKillWindow();
 	void OnCreateWindow();
+	void OnCloseAllHandles(WProcess32* exception);
 
+	
 	AppWindow window;
 
 	std::vector<WProcess32> Processes;

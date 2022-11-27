@@ -22,7 +22,7 @@ enum FontEnum
 
 };
 
-inline struct Font_s
+struct Font_s
 {
 
 	Font_s() : fonts(NULL) {};
@@ -32,11 +32,11 @@ inline struct Font_s
 	bool InsertFont(const char* name, std::string fontpath, float scale);
 	ImFont* FetchFont(const char* name);
 
-	std::vector< std::pair<ImFont*, const char*> > fonts;
 
+	std::vector< std::pair<ImFont*, const char*> > fonts;
 	void LoadHardcodedFonts();
 
-}Font;
+};
 
 
 #endif

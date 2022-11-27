@@ -6,6 +6,9 @@
 #define NOMINMAX
 
 #pragma warning(disable : 4996)
+#pragma warning(disable : 4005) //DIRECTX11 STOP!!!!
+
+
 
 #include <Windows.h>
 #include <thread>
@@ -33,20 +36,22 @@
 #include "ImGui/imgui_impl_win32.h"
 #include "ImGui/imgui_stdlib.h"
 
-#include "backward.hpp"
-using namespace backward;
-
 #include <d3d11.h>
+#include <d3dx11.h>
 
 #include "timing.hpp"
+#include "osinfo.hpp"
 #include "appwindows.hpp"
 #include "processlist.h"
 #include "filetools.hpp"
 #include "winfont.hpp"
+#include "imageresources.hpp"
 #include "vectors.hpp"
 #include "basewindow.hpp"
 #include "main_window.hpp"
 #include "activeprocess.hpp"
 
+//#define STB_IMAGE_IMPLEMENTATION
+//#include "stb_image.h"
 
 #endif

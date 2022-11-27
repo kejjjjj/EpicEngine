@@ -2,6 +2,8 @@
 
 DWORD ProcList::GetAvailableProcesses(std::vector<WProcess32>& Processes)
 {
+	ProcList::ProcWindow.OnCloseAllHandles(0);
+
 	DWORD procCount[1024];
 	DWORD needed;
 	if (!K32EnumProcesses(procCount, sizeof(procCount), &needed))
@@ -26,9 +28,18 @@ DWORD ProcList::GetAvailableProcesses(std::vector<WProcess32>& Processes)
 
 				char buff[124];
 
-				K32GetModuleBaseNameA(p.handle, p.module, buff, 124);
+				if (!p.module)
+					std::cout << "INVALID HMODULE\n";
+
+				//K32GetProcessImageFileNameA(p.handle, buff, 124);
+				if (!K32GetModuleBaseNameA(p.handle, p.module, buff, 124)) {
+					std::cout << "K32GetModuleBaseNameA: " << fs::_GetLastError() << '\n';
+				}
+
 				if (buff[0] != '\0')
 					p.name = buff;
+				else
+					p.name = "Unable to get name";
 
 				//if(p.module)
 				//	p.icon = ExtractIconA(p.module, buff, 0);
@@ -36,12 +47,20 @@ DWORD ProcList::GetAvailableProcesses(std::vector<WProcess32>& Processes)
 				
 				
 			}
+			else {
+				CloseHandle(p.handle);
+				continue;
+				//std::cout << "K32EnumProcessModules(p.handle, &p.module, sizeof(HMODULE), &cbNeeded): " << fs::_GetLastError() << '\n';
+			}
 			p.ID = GetProcessId(p.handle);
 
-			CloseHandle(p.handle);
+		//	std::cout << p.name << " handle is: " << std::dec << p.handle << '\n';
+
+			//CloseHandle(p.handle);
 			p.valid = TRUE;
 
-		}
+		}/*else
+			std::cout << "INVALID handle! GetLastError(): \n" << fs::_GetLastError().c_str();*/
 
 		if (p.valid)
 			Processes.push_back(p);
@@ -52,13 +71,13 @@ DWORD ProcList::GetAvailableProcesses(std::vector<WProcess32>& Processes)
 
 }
 
-WProcess32* ProcessWindow::OnDrawProcess(WProcess32* i)
+WProcess32* ProcessWindow::OnDrawProcess(WProcess32* i, const float height)
 {
-
+	float initial_y = window.Pos.y + 45;
 	static WProcess32* lastSelected = 0;
 	static DWORD lastClicked = Sys_MilliSeconds();
 
-	std::string text = std::format("{:X}-{}", i->ID, i->name);
+	const std::string text = std::format("{}-({:x}-{:x})-{}", i->ID, (DWORD)i->module, 0xFFFFFFFF, i->name);
 	ImGui::Text("%s", text.c_str());
 
 	const ImVec2 min = ImGui::GetItemRectMin();
@@ -73,7 +92,7 @@ WProcess32* ProcessWindow::OnDrawProcess(WProcess32* i)
 		ImGui::GetWindowDrawList()->AddRectFilled(bmins, bmaxs, IM_COL32(50, 255, 255, 170));
 	}
 
-	if (ImGui::IsClicked(bmins, bmaxs) && ImGui::IsHovered(window.Pos, ImVec2(window.Pos.x + window.Size.x, window.Pos.y + 440))) {
+	if (ImGui::IsClicked(bmins, bmaxs) && ImGui::IsHovered(ImVec2(window.Pos.x, initial_y), ImVec2(window.Pos.x + window.Size.x, initial_y + height))) {
 
 		//ImGui::TextCentered("isClicked: %i", ImGui::IsClicked(bmins, bmaxs));
 
@@ -81,7 +100,7 @@ WProcess32* ProcessWindow::OnDrawProcess(WProcess32* i)
 
 		if (Sys_MilliSeconds() - lastClicked < 200) {
 			CurrentProcess = *i;
-
+			OnCloseAllHandles(i);
 			OnKillWindow();
 		}
 
@@ -107,11 +126,13 @@ void ProcessWindow::Render()
 
 	static WProcess32* lastSelected;
 
-	ImGui::BeginChild("cock", ImVec2(PW->window.Size.x, 400), true);
+	const float height = PW->window.Size.y - 200;
+	ImGui::BeginChild("yepp", ImVec2(PW->window.Size.x, height), true);
+	ImGui::SetWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
 
 
 	for (auto& i : PW->Processes) {
-		lastSelected = PW->OnDrawProcess(&i);
+		lastSelected = PW->OnDrawProcess(&i, height);
 	}
 	ImGui::EndChild();
 
@@ -121,16 +142,42 @@ void ProcessWindow::Render()
 	
 	if (ImGui::ButtonCentered("Open", 0.45f)) {
 		CurrentProcess = lastSelected;
+		PW->OnCloseAllHandles(lastSelected);
 		PW->OnKillWindow();
 	}
 	ImGui::SameLine();
-	if (ImGui::Button("Cancel"))
-		PW->window.open = false;
+	if (ImGui::Button("Cancel")) {
+		PW->OnCloseAllHandles(0);
+		PW->OnKillWindow();
+
+	}
 
 	PW->window.CornerActionButtons();
 
 	ImGui::End();
 
+}
+void ProcessWindow::OnCloseAllHandles(WProcess32* exception)
+{
+	if (this->Processes.empty())
+		return;
+
+	for (auto& j : this->Processes) {
+		if (!j.handle)
+			continue;
+
+		if (exception) {
+			if (exception->handle != j.handle) {
+				std::cout << "closing handle for [" << j.name << "]\n";
+				CloseHandle(j.handle);
+			}
+		}
+		else {
+			std::cout << "closing handle for [" << j.name << "]\n";
+			CloseHandle(j.handle);
+		}
+
+	}
 }
 void ProcessWindow::OnCreateWindow()
 {
@@ -141,6 +188,7 @@ void ProcessWindow::OnCreateWindow()
 }
 void ProcessWindow::OnKillWindow()
 {
+	//OnCloseAllHandles(0);
 	Processes.clear();
 	window.open = false;
 }

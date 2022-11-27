@@ -34,6 +34,9 @@
     <Filter Include="Source Files\filesystem">
       <UniqueIdentifier>{f5ed73cf-41fb-45b7-8949-5dc8b3c480cf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\machine">
+      <UniqueIdentifier>{8955a8bb-12b1-4c9d-902a-bcaeeb130715}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -102,6 +105,15 @@
     <ClInclude Include="winfont.hpp">
       <Filter>Source Files\filesystem</Filter>
     </ClInclude>
+    <ClInclude Include="imageresources.hpp">
+      <Filter>Source Files\filesystem</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
+      <Filter>Header Files\lib</Filter>
+    </ClInclude>
+    <ClInclude Include="osinfo.hpp">
+      <Filter>Source Files\machine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EpicEngine.cpp">
@@ -157,6 +169,12 @@
     </ClCompile>
     <ClCompile Include="winfont.cpp">
       <Filter>Source Files\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="imageresources.cpp">
+      <Filter>Source Files\filesystem</Filter>
+    </ClCompile>
+    <ClCompile Include="osinfo.cpp">
+      <Filter>Source Files\machine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -21,6 +21,7 @@ std::string fs::GetRootDirectory()
 }
 bool fs::F_DirectoryExists(std::string& directory_path)
 {
+	
 	return _fs::exists(directory_path);
 }
 bool fs::F_FileExists(std::string& directory, std::string& file_name)
@@ -159,7 +160,7 @@ std::string fs::removeFileExtension(std::string& file, size_t chars)
 {
 	return file.substr(0, file.size() - chars);
 }
-std::string fs::F_GetFileName(std::string& fullpath)
+std::string fs::F_GetFileName(std::string const fullpath)
 {
 	size_t pos = fullpath.find_last_of('\\');
 

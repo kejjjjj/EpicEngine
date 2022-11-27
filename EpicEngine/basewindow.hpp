@@ -13,7 +13,7 @@ class MainWindow
 {
 public:
 
-    MainWindow() : g_pd3dDevice(NULL), g_pd3dDeviceContext(NULL), g_pSwapChain(NULL), g_mainRenderTargetView(NULL), hwnd(NULL), initialized(FALSE) {}
+    MainWindow() : g_pd3dDevice(NULL), g_pd3dDeviceContext(NULL), g_pSwapChain(NULL), g_mainRenderTargetView(NULL), hwnd(NULL), initialized(FALSE), wc() {}
     ~MainWindow() {}
   //  WNDPROC wndProc;
 
@@ -26,6 +26,7 @@ public:
     void CleanupDeviceD3D();
     HWND GetWindowHandle() { return hwnd; }
     void AddRenderFunction(std::function<void()> fnc);
+
     void SetMenuStyle();
 
     AppWindow window;
@@ -43,6 +44,7 @@ public:
      HWND hwnd;
      std::string szTitle;
      std::vector<std::function<void()>> RenderFunctions{};
+
      bool initialized;
      //ImVec2 Size;
      //ImVec2 Pos;

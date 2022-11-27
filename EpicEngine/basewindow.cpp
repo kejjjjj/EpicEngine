@@ -116,7 +116,8 @@ bool MainWindow::InitializeWindow(const char* p_szTitle, HINSTANCE hInst, WNDPRO
 
     sys_baseTime = timeGetTime();
     root_directory = fs::GetRootDirectory();
-    Font.LoadHardcodedFonts();
+
+    rsc.LoadAllResources();
    // MessageBoxA(NULL, fs::GetRootDirectory().c_str(), "Root Directory", MB_ICONEXCLAMATION);
 
     return true;
@@ -135,7 +136,7 @@ void MainWindow::KillWindow()
 }
 void MainWindow::ExitApplication()
 {
-    Font.~Font_s();
+    rsc.Font.~Font_s();
     ProcList::ProcWindow.~ProcessWindow();
     KillWindow();
 
@@ -144,7 +145,7 @@ void MainWindow::ExitApplication()
 }
 void MainWindow::CleanupRenderTarget()
 {
-    if (g_mainRenderTargetView != nullptr && (DWORD)g_mainRenderTargetView != 0xCDCDCDCD) {
+    if (g_mainRenderTargetView != nullptr) {
         g_mainRenderTargetView->Release();
         g_mainRenderTargetView = NULL; 
     }
@@ -230,23 +231,22 @@ bool MainWindow::Render(ImGuiIO& io, MSG& msg)
 
     static ImGuiStyle* style = &ImGui::GetStyle();
 
-    ImGui::PushFont(Font.fonts[SegoeUI_SemiBoldSM].first);
+    ImGui::PushFont(rsc.Font.fonts[SegoeUI_SemiBoldSM].first);
 
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(style->FramePadding.x, style->FramePadding.y*3));
 
     ImGui::Begin(wc.lpszClassName, 0, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar);
+    ImGui::SetWindowSize(ImVec2(1280, 720), ImGuiCond_FirstUseEver);
 
     
 
-    for (auto& i : RenderFunctions)
-        i();
+    for (auto& renderbit : RenderFunctions)
+        renderbit();
 
     hWnd_main.window.Pos = ImGui::GetWindowPos();
     hWnd_main.window.Size = ImGui::GetWindowSize();
-
     window.CornerActionButtons();
-    
-    ImGui::TextCentered("%.2f fps (%.2f)", io.Framerate, 1000.f / io.Framerate);
+
 
     const float frametime = 1000.f / io.Framerate;
 
@@ -254,6 +254,7 @@ bool MainWindow::Render(ImGuiIO& io, MSG& msg)
         Sleep((int)(25.7f - frametime));
 
     ImGui::End();
+
     ImGui::PopStyleVar();
 
     ImGui::PopFont();
@@ -268,6 +269,7 @@ bool MainWindow::Render(ImGuiIO& io, MSG& msg)
     // Update and Render additional Platform Windows
     if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
     {
+
         ImGui::UpdatePlatformWindows();
         ImGui::RenderPlatformWindowsDefault();
     }

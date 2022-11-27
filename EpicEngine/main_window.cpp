@@ -2,7 +2,7 @@
 
 void MW::Render()
 {
-	ImGui::TextCentered("Selected Process: %s", CurrentProcess.data.handle != nullptr ? CurrentProcess.data.name.c_str() : "NONE");
+	ImGui::TextCentered("Selected Process: %s", CurrentProcess.procdata.handle != nullptr ? CurrentProcess.procdata.name.c_str() : "NONE");
 
 }
 
