@@ -8,6 +8,7 @@ Probably a dead project soon :thinking:
 <a href="https://github.com/microsoft/Detours" title="detours">Microsoft Detours</a>
 
 
-<a href="https://icons8.com/icon/set/windows-10-maximize/windows" title="eye icons">Maximize button (icons8.com)</a>\
-<a href="https://icons8.com/icon/16147/subtract" title="Minimize button (icons8.com)</a>\
-<a href="https://icons8.com/icon/16248/close" title="Close button (icons8.com)</a>\
+<a href="https://icons8.com/icon/set/windows-10-maximize/windows">Maximize button (icons8.com)</a>\
+<a href="https://icons8.com/icon/16147/subtract">Minimize button (icons8.com)</a>\
+<a href="https://icons8.com/icon/16248/close">Close button (icons8.com)</a>
+
