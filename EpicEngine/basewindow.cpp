@@ -102,7 +102,7 @@ bool MainWindow::InitializeWindow(const char* p_szTitle, HINSTANCE hInst, WNDPRO
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     //io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
-
+    io.ConfigWindowsMoveFromTitleBarOnly = true;
     // Setup Platform/Renderer backends
     if (!ImGui_ImplWin32_Init(hwnd)) {
         FatalError("!ImGui_ImplWin32_Init(hwnd)");
@@ -295,6 +295,7 @@ void MainWindow::SetMenuStyle()
     style->ScrollbarRounding = 9.0f;
     style->GrabMinSize = 5.0f;
     style->GrabRounding = 3.0f;
+    style->WindowTitleAlign = ImVec2(0.07f, style->WindowTitleAlign.y);
 
     style->Colors[ImGuiCol_Text] = ImVec4(0.80f, 0.80f, 0.83f, 1.00f);
     style->Colors[ImGuiCol_TextDisabled] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
@@ -303,7 +304,7 @@ void MainWindow::SetMenuStyle()
     style->Colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
     style->Colors[ImGuiCol_Border] = ImVec4(0.80f, 0.80f, 0.83f, 0.88f);
     style->Colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
-    style->Colors[ImGuiCol_FrameBg] = style->Colors[ImGuiCol_WindowBg];
+    style->Colors[ImGuiCol_FrameBg] = ImVec4(0.1f, 0.1f, 0.1f, 1.00f);
     style->Colors[ImGuiCol_FrameBgHovered] = style->Colors[ImGuiCol_FrameBg];
     style->Colors[ImGuiCol_FrameBgActive] = style->Colors[ImGuiCol_FrameBg];
     style->Colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);

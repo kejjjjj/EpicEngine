@@ -36,8 +36,14 @@ DWORD ProcList::GetAvailableProcesses(std::vector<WProcess32>& Processes)
 					std::cout << "K32GetModuleBaseNameA: " << fs::_GetLastError() << '\n';
 				}
 
-				if (buff[0] != '\0')
-					p.name = buff;
+				if (buff[0] != '\0') {
+					size_t len = strlen(buff)+1;
+					for (int i = 0; i < len; i++) {
+
+						p.name.push_back(tolower(buff[i]));
+						//p.name = buff;
+					}
+				}
 				else
 					p.name = "Unable to get name";
 
@@ -65,6 +71,7 @@ DWORD ProcList::GetAvailableProcesses(std::vector<WProcess32>& Processes)
 		if (p.valid)
 			Processes.push_back(p);
 		
+		p.name.clear();
 
 	}
 	return Processes.size();
@@ -77,7 +84,7 @@ WProcess32* ProcessWindow::OnDrawProcess(WProcess32* i, const float height)
 	static WProcess32* lastSelected = 0;
 	static DWORD lastClicked = Sys_MilliSeconds();
 
-	const std::string text = std::format("{}-({:x}-{:x})-{}", i->ID, (DWORD)i->module, 0xFFFFFFFF, i->name);
+	const std::string text = std::format("{}-{:x}-{}", i->ID, (DWORD)i->module, i->name);
 	ImGui::Text("%s", text.c_str());
 
 	const ImVec2 min = ImGui::GetItemRectMin();
@@ -99,9 +106,11 @@ WProcess32* ProcessWindow::OnDrawProcess(WProcess32* i, const float height)
 		lastSelected = i;
 
 		if (Sys_MilliSeconds() - lastClicked < 200) {
-			CurrentProcess = *i;
-			OnCloseAllHandles(i);
-			OnKillWindow();
+			OnProcessSelected(*i);
+			//CurrentProcess = *i;
+			//MemoryView.process = &CurrentProcess.procdata;
+			//OnCloseAllHandles(i);
+			//OnKillWindow();
 		}
 
 		lastClicked = Sys_MilliSeconds();
@@ -126,13 +135,18 @@ void ProcessWindow::Render()
 
 	static WProcess32* lastSelected;
 
+	static std::string search;
+
+	ImGui::InputText("Search", &search);
+
 	const float height = PW->window.Size.y - 200;
 	ImGui::BeginChild("yepp", ImVec2(PW->window.Size.x, height), true);
 	ImGui::SetWindowSize(ImVec2(500, 500), ImGuiCond_FirstUseEver);
-
+	
 
 	for (auto& i : PW->Processes) {
-		lastSelected = PW->OnDrawProcess(&i, height);
+		if(i.name.find(search) != std::string::npos || search.empty())
+			lastSelected = PW->OnDrawProcess(&i, height);
 	}
 	ImGui::EndChild();
 
@@ -141,9 +155,10 @@ void ProcessWindow::Render()
 	PW->window.Size = ImGui::GetWindowSize();
 	
 	if (ImGui::ButtonCentered("Open", 0.45f)) {
-		CurrentProcess = lastSelected;
-		PW->OnCloseAllHandles(lastSelected);
-		PW->OnKillWindow();
+		PW->OnProcessSelected(*lastSelected);
+		//CurrentProcess = lastSelected;
+		//PW->OnCloseAllHandles(lastSelected);
+		//PW->OnKillWindow();
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Cancel")) {
@@ -170,14 +185,24 @@ void ProcessWindow::OnCloseAllHandles(WProcess32* exception)
 			if (exception->handle != j.handle) {
 				std::cout << "closing handle for [" << j.name << "]\n";
 				CloseHandle(j.handle);
+				j.handle = 0;
 			}
 		}
 		else {
 			std::cout << "closing handle for [" << j.name << "]\n";
 			CloseHandle(j.handle);
+			j.handle = 0;
 		}
 
 	}
+}
+void ProcessWindow::OnProcessSelected(WProcess32 process)
+{
+	MemoryView.OnInvalidateData();
+	CurrentProcess = process;
+	MemoryView.process = &CurrentProcess.procdata;
+	OnCloseAllHandles(&process);
+	OnKillWindow();
 }
 void ProcessWindow::OnCreateWindow()
 {

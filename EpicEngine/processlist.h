@@ -12,7 +12,7 @@ struct WProcess32
 	HMODULE module;
 	DWORD ID;
 	std::string name;
-	//HICON icon; //idk how to use this with directx
+	HICON icon; //idk how to use this with directx
 	bool valid;
 
 };
@@ -28,7 +28,7 @@ public:
 	void OnKillWindow();
 	void OnCreateWindow();
 	void OnCloseAllHandles(WProcess32* exception);
-
+	void OnProcessSelected(WProcess32 process);
 	
 	AppWindow window;
 

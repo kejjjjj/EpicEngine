@@ -109,5 +109,6 @@ void Resource_s::LoadAllResources()
 	AddTexture("images\\minimize32.png", "minimize32");
 	AddTexture("images\\maximize32.png", "maximize32");
 
+	AddTexture("images\\icon128.png", "icon128");
 
 }

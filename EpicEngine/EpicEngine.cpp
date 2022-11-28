@@ -28,9 +28,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
     hWnd_main.SetMenuStyle();
 
     hWnd_main.AddRenderFunction(MW::RenderTabBar);
-    hWnd_main.AddRenderFunction(MW::Render);
     hWnd_main.AddRenderFunction(ProcList::ProcWindow.Render);
     hWnd_main.AddRenderFunction(CurrentProcess.MonitorActiveProcess);
+    hWnd_main.AddRenderFunction(MemoryView.Render);
+    
+    MW::MainWndRendingFunc.push_back(MW::Render);
+    MW::MainWndRendingFunc.push_back(mem_scan.Render);
+
     MSG msg{};
     ImGuiIO& io = ImGui::GetIO();
 
@@ -52,7 +56,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
             break;
         }
 
-        //SetWindowPos(hWnd_main.GetWindowHandle(), NULL, hWnd_main.window.Pos.x, hWnd_main.window.Pos.y, hWnd_main.window.Size.x + 15, hWnd_main.window.Size.y + 38, SWP_NOACTIVATE | SWP_HIDEWINDOW);
+       // SetWindowPos(hWnd_main.GetWindowHandle(), NULL, hWnd_main.window.Pos.x, hWnd_main.window.Pos.y, hWnd_main.window.Size.x + 15, hWnd_main.window.Size.y + 38, SWP_NOACTIVATE | SWP_HIDEWINDOW);
     }
 
     //hWnd_main.KillWindow();

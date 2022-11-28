@@ -46,11 +46,11 @@
 #include "filetools.hpp"
 #include "winfont.hpp"
 #include "imageresources.hpp"
-#include "vectors.hpp"
 #include "basewindow.hpp"
 #include "main_window.hpp"
+#include "scanwindow.hpp"
+#include "memorybytes.hpp"
 #include "activeprocess.hpp"
-
 //#define STB_IMAGE_IMPLEMENTATION
 //#include "stb_image.h"
 

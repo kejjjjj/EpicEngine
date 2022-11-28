@@ -19,9 +19,6 @@
     <Filter Include="Source Files\winapi">
       <UniqueIdentifier>{014cfac1-a5ae-412a-a184-3338a6cdaa23}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\datatypes">
-      <UniqueIdentifier>{d8f7ec99-409c-4761-b0ba-cedca1dd0eb5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\lib">
       <UniqueIdentifier>{a77b95d2-f343-461d-92e8-271eeb327514}</UniqueIdentifier>
     </Filter>
@@ -37,6 +34,12 @@
     <Filter Include="Source Files\machine">
       <UniqueIdentifier>{8955a8bb-12b1-4c9d-902a-bcaeeb130715}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\scanning">
+      <UniqueIdentifier>{2abdcd0b-be00-4e89-998e-2197324b3161}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\memoryview">
+      <UniqueIdentifier>{85c92bf9-1b8a-4a99-abbc-de8eea6cc973}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -50,9 +53,6 @@
     </ClInclude>
     <ClInclude Include="EpicEngine.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vectors.hpp">
-      <Filter>Source Files\datatypes</Filter>
     </ClInclude>
     <ClInclude Include="basewindow.hpp">
       <Filter>Source Files\winapi</Filter>
@@ -113,6 +113,12 @@
     </ClInclude>
     <ClInclude Include="osinfo.hpp">
       <Filter>Source Files\machine</Filter>
+    </ClInclude>
+    <ClInclude Include="scanwindow.hpp">
+      <Filter>Source Files\scanning</Filter>
+    </ClInclude>
+    <ClInclude Include="memorybytes.hpp">
+      <Filter>Source Files\memoryview</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +181,12 @@
     </ClCompile>
     <ClCompile Include="osinfo.cpp">
       <Filter>Source Files\machine</Filter>
+    </ClCompile>
+    <ClCompile Include="scanwindow.cpp">
+      <Filter>Source Files\scanning</Filter>
+    </ClCompile>
+    <ClCompile Include="memorybytes.cpp">
+      <Filter>Source Files\memoryview</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
