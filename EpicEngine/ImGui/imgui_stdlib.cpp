@@ -74,7 +74,7 @@ bool ImGui::InputTextWithHint(const char* label, const char* hint, std::string* 
     cb_user_data.ChainCallbackUserData = user_data;
     return InputTextWithHint(label, hint, (char*)str->c_str(), str->capacity() + 1, flags, InputTextCallback, &cb_user_data);
 }
-bool ImGui::ButtonCentered(const char* label, float alignment)
+bool ImGui::ButtonCentered(const char* label, float alignment, ImVec2 _size)
 {
     ImGuiStyle& style = ImGui::GetStyle();
 
@@ -85,7 +85,7 @@ bool ImGui::ButtonCentered(const char* label, float alignment)
     if (off > 0.0f)
         ImGui::SetCursorPosX(ImGui::GetCursorPosX() + off);
 
-    return ImGui::Button(label);
+    return ImGui::Button(label, _size);
 }
 void ImGui::TextCentered(const char* label, ...)
 {

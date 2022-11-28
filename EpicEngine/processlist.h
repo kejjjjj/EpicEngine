@@ -10,7 +10,7 @@ struct WProcess32
 
 	HANDLE handle;
 	HMODULE module;
-	DWORD ID;
+	UPTR ID;
 	std::string name;
 	HICON icon; //idk how to use this with directx
 	bool valid;

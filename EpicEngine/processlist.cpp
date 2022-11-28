@@ -82,9 +82,9 @@ WProcess32* ProcessWindow::OnDrawProcess(WProcess32* i, const float height)
 {
 	float initial_y = window.Pos.y + 45;
 	static WProcess32* lastSelected = 0;
-	static DWORD lastClicked = Sys_MilliSeconds();
+	static UPTR lastClicked = Sys_MilliSeconds();
 
-	const std::string text = std::format("{}-{:x}-{}", i->ID, (DWORD)i->module, i->name);
+	const std::string text = std::format("{}-{:x}-{}", i->ID, (UPTR)i->module, i->name);
 	ImGui::Text("%s", text.c_str());
 
 	const ImVec2 min = ImGui::GetItemRectMin();

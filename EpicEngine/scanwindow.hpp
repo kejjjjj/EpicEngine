@@ -14,7 +14,7 @@ public:
 	static void Render();
 
 private:
-	DWORD results_found;
+	UPTR results_found;
 
 };
 

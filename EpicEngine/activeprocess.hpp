@@ -32,12 +32,12 @@ public:
 	}memory;
 
 	template<typename t>
-	t read(const DWORD v, bool& failed) {
+	t read(const UPTR v, bool& failed) {
 
 		//object should have PROCESS_VM_READ flag
 		t end;
 		MEMORY_BASIC_INFORMATION meminfo;
-		static DWORD last_error_happened = 0;
+		static UPTR last_error_happened = 0;
 
 		failed = true;
 

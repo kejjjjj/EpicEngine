@@ -9752,7 +9752,7 @@ bool ImGui::ItemAdd(const ImRect& bb, ImGuiID id, const ImRect* nav_bb_arg, ImGu
 //      offset_from_start_x != 0 : align to specified x position (relative to window/group left)
 //      spacing_w < 0            : use default spacing if pos_x == 0, no spacing if pos_x != 0
 //      spacing_w >= 0           : enforce spacing amount
-void ImGui::SameLine(float offset_from_start_x, float spacing_w)
+void ImGui::SameLine(float offset_from_start_x, float spacing_w, bool negative_spacing)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
@@ -9768,7 +9768,7 @@ void ImGui::SameLine(float offset_from_start_x, float spacing_w)
     }
     else
     {
-        if (spacing_w < 0.0f)
+        if (spacing_w < 0.0f && !negative_spacing)
             spacing_w = g.Style.ItemSpacing.x;
         window->DC.CursorPos.x = window->DC.CursorPosPrevLine.x + spacing_w;
         window->DC.CursorPos.y = window->DC.CursorPosPrevLine.y;

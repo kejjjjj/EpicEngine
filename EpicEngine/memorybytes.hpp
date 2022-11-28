@@ -5,21 +5,30 @@
 
 #include "EpicEngine.h"
 
+#define MEMVIEW_REFRESHRATE 100 //updates every 100ms
+#define MEMVIEW_X_PADDING 23.f
+
 class Memoryview_t
 {
 public:
+	Memoryview_t() : addrpopup() {}
 	static void Render();
 	void OnWindowCreated();
 	void OnWindowKilled();
 	void OnRenderMemoryMap();
 	void OnRenderMemoryMapContents();
+	void OnGoToAddress();
+	struct addresspopup {
+		AppWindow window;
+
+	}addrpopup;
 	void OnInvalidateData();
 	AppWindow window;
 	WProcess32* process;
 
 private:
 	void* start_address; //first window offset starts here
-	USHORT bytes_per_line;
+	UPTR bytes_per_line;
 	USHORT columns_visible;
 	void* current_region_handle; //current module in the window
 };

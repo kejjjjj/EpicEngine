@@ -8,7 +8,11 @@
 #pragma warning(disable : 4996)
 #pragma warning(disable : 4005) //DIRECTX11 STOP!!!!
 
-
+#ifdef _WIN64
+typedef unsigned long long UPTR;
+#else
+typedef unsigned long UPTR;
+#endif
 
 #include <Windows.h>
 #include <thread>

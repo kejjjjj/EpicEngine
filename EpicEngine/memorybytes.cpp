@@ -27,7 +27,7 @@ void Memoryview_t::OnWindowCreated()
 	if(!start_address)
 		start_address = process->handle != nullptr ? process->module : 0;
 
-	current_region_handle = start_address;
+	current_region_handle = process->module;
 	this->window.open = true;
 
 }
@@ -40,9 +40,11 @@ void Memoryview_t::OnRenderMemoryMap()
 	if(!start_address && process->module)
 		start_address = process->module;
 
+	OnGoToAddress();
+
 	const ImVec2 fp = ImGui::GetStyle().FramePadding;
 
-	std::string addr = std::format("Address: {:x} | {}", (DWORD)start_address, process->name);
+	std::string addr = std::format("Address: {:x} | {}", (UPTR)start_address, process->name);
 	ImGui::TextCentered(addr.c_str());
 
 	const float itemHeight = ImGui::GetItemRectSize().y;
@@ -50,11 +52,14 @@ void Memoryview_t::OnRenderMemoryMap()
 	ImGui::BeginGroup();
 
 	ImGui::Dummy(ImVec2(0, 1)); //vertical alignment
-	for (int i = 0; i < columns_visible; i++) {
-		ImGui::Text("+0x%X", /*process->name.c_str(),*/ (DWORD)(((DWORD)start_address + (i * bytes_per_line)) - (DWORD)current_region_handle)); //module base offset
+
+	for (UPTR i = 0; i < columns_visible; i++) {
+		addr = std::format("0x{:X}", ((UPTR)start_address + (UPTR)(i * bytes_per_line)));
+		ImGui::Text(addr.c_str());
 	}
 
 	ImGui::EndGroup();
+
 	ImGui::SameLine();
 
 	ImGui::BeginChild("memmap", ImVec2(window.Size.x - 16, window.Size.y - fp.y - itemHeight*4), true);
@@ -66,10 +71,10 @@ void Memoryview_t::OnRenderMemoryMap()
 	ImGuiIO* io = &ImGui::GetIO();
 
 	if (io->MouseWheel < 0) {
-		start_address = (void*)((DWORD)start_address + bytes_per_line);
+		start_address = (void*)((UPTR)start_address + bytes_per_line);
 	}
 	else if (io->MouseWheel > 0) {
-		start_address = (void*)((DWORD)start_address - bytes_per_line);
+		start_address = (void*)((UPTR)start_address - bytes_per_line);
 	}
 
 
@@ -81,7 +86,7 @@ void Memoryview_t::OnInvalidateData()
 
 }
 void Memoryview_t::OnRenderMemoryMapContents() {
-	if (!start_address) {
+	if (!CurrentProcess.ProcessRunning()) {
 		ImGui::Text("No Process loaded!");
 		return;
 	}
@@ -89,34 +94,94 @@ void Memoryview_t::OnRenderMemoryMapContents() {
 	USHORT offset_horizontal{0}, offset_vertical{0};
 	bool address_invalid;
 	
+	//static DWORD time = Sys_MilliSeconds();
+	//if (time + MEMVIEW_REFRESHRATE < Sys_MilliSeconds()) {
+	//	time = Sys_MilliSeconds();
+	//	return;
+	//}
+
 	for (int j = 0; j < bytes_per_line; j++) {
 
 		ImGui::BeginGroup();
+
 		for (int i = 0; i < columns_visible; i++) {
 
 			//iterate all vertical offsets first to align the bytes properly
 
-			const BYTE byte = CurrentProcess.read<BYTE>((DWORD)start_address + offset_vertical + offset_horizontal, address_invalid);
+			const BYTE byte = CurrentProcess.read<BYTE>((UPTR)start_address + offset_vertical + offset_horizontal, address_invalid);
 
 			if (address_invalid)
-				fmt = "??";
+				fmt = "? ?";
 			else {
 				fmt = std::format("{:X}", byte);
 				if (fmt.size() == 1)
 					fmt.push_back('0');
 			}
 			ImGui::Text("%s ", fmt.c_str());
-
+			ImGui::SameLine();
+			ImGui::Dummy(ImVec2((MEMVIEW_X_PADDING - ImGui::GetItemRectSize().x) - 10, 0));
+			if (GetAsyncKeyState(VK_HOME) & 1) {
+				std::cout << "width off '" << std::hex << (ULONG)byte << "': " << ImGui::GetItemRectSize().x << '\n';
+			}
 
 			offset_vertical += columns_visible;
 
 		}
 		ImGui::EndGroup();
 		ImGui::SameLine();
+
 		++offset_horizontal;
 		offset_vertical = NULL;
 
 
 	}
+
+}
+void Memoryview_t::OnGoToAddress()
+{
+	static ImGuiIO* io = &ImGui::GetIO();
+
+	if (io->KeyCtrl && io->KeysDown['G']) {
+		std::cout << "CTRL + G\n";
+		addrpopup.window.open = true;
+	}
+
+	if (!addrpopup.window.open)
+		return;
+
+	static std::string addr;
+
+
+	ImGui::Begin("Go To Address", 0, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize);
+
+	ImGui::TextCentered("where?");
+
+	ImGui::InputText("##01", &addr, ImGuiInputTextFlags_CharsHexadecimal);
+
+	if (ImGui::ButtonCentered("OK", 0.2f, ImVec2(100, 0)) || io->KeysDown[ImGuiKey_Enter]) {
+		if (addr.empty()) {
+			MessageBoxA(NULL, "Invalid Address", "Error", MB_ICONERROR);
+			return;
+		}
+		std::stringstream ss(addr);
+
+		UPTR UPTR_addr;
+		ss >> std::hex >> UPTR_addr;
+
+		start_address = (void*)UPTR_addr;
+		addrpopup.window.open = false;
+
+
+	}ImGui::SameLine();
+	if (ImGui::Button("Cancel", ImVec2(100, 0))) {
+		addrpopup.window.open = false;
+	}
+
+	addrpopup.window.CornerActionButtons();
+
+	addrpopup.window.Pos = ImGui::GetWindowPos();
+	addrpopup.window.Size = ImGui::GetWindowSize();
+
+	ImGui::End();
 
 }
