@@ -1,18 +1,41 @@
 #include "EpicEngine.h"
 
+void Memoryview_t::RenderTabBar()
+{
+	if (ImGui::BeginMenuBar()) {
+
+		if (ImGui::BeginMenu("Tools")) {
+
+			//TabBarAction("Select Process\t", []() { ProcList::ProcWindow.OnCreateWindow(); });
+			MW::TabBarAction("Inspect Modules\t", []() { moduleWnd.OnOpenModuleWindow(); });
+
+			ImGui::EndMenu();
+		}
+
+	}ImGui::EndMenuBar();
+
+
+	moduleWnd.Render();
+
+}
 void Memoryview_t::Render()
 {
 
 	if (!MemoryView.window.open)
 		return;
 
-	ImGui::Begin("Memory view", 0, ImGuiWindowFlags_NoCollapse);
+	ImGui::Begin("Memory view", 0, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar);
 	ImGui::SetWindowSize(ImVec2(1280, 720), ImGuiCond_FirstUseEver);
+
+	MemoryView.RenderTabBar();
 
 	MemoryView.OnRenderMemoryMap();
 
 	MemoryView.window.Pos = ImGui::GetWindowPos();
 	MemoryView.window.Size = ImGui::GetWindowSize();
+
+	MemoryView.window.active = ImGui::IsWindowFocused();
+
 
 	MemoryView.window.CornerActionButtons();
 
@@ -62,7 +85,7 @@ void Memoryview_t::OnRenderMemoryMap()
 
 	ImGui::SameLine();
 
-	ImGui::BeginChild("memmap", ImVec2(window.Size.x - 16, window.Size.y - fp.y - itemHeight*4), true);
+	ImGui::BeginChild("memmap", ImVec2(window.Size.x - 16, window.Size.y - fp.y - itemHeight * 4), true, ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoScrollbar);
 
 	OnRenderMemoryMapContents();
 
@@ -70,11 +93,13 @@ void Memoryview_t::OnRenderMemoryMap()
 
 	ImGuiIO* io = &ImGui::GetIO();
 
-	if (io->MouseWheel < 0) {
-		start_address = (void*)((UPTR)start_address + bytes_per_line);
-	}
-	else if (io->MouseWheel > 0) {
-		start_address = (void*)((UPTR)start_address - bytes_per_line);
+	if (window.active) {
+		if (io->MouseWheel < 0) {
+			start_address = (void*)((UPTR)start_address + bytes_per_line);
+		}
+		else if (io->MouseWheel > 0) {
+			start_address = (void*)((UPTR)start_address - bytes_per_line);
+		}
 	}
 
 
@@ -156,20 +181,22 @@ void Memoryview_t::OnGoToAddress()
 
 	ImGui::TextCentered("where?");
 
-	ImGui::InputText("##01", &addr, ImGuiInputTextFlags_CharsHexadecimal);
+	ImGui::InputText("##01", &addr);
 
 	if (ImGui::ButtonCentered("OK", 0.2f, ImVec2(100, 0)) || io->KeysDown[ImGuiKey_Enter]) {
 		if (addr.empty()) {
 			MessageBoxA(NULL, "Invalid Address", "Error", MB_ICONERROR);
 			return;
 		}
-		std::stringstream ss(addr);
+		AddressParser parser(addr, CurrentProcess.modules);
+		parser.Parse();
+		//std::stringstream ss(addr);
 
-		UPTR UPTR_addr;
-		ss >> std::hex >> UPTR_addr;
+		//UPTR UPTR_addr;
+		//ss >> std::hex >> UPTR_addr;
 
-		start_address = (void*)UPTR_addr;
-		addrpopup.window.open = false;
+		//start_address = (void*)UPTR_addr;
+		//addrpopup.window.open = false;
 
 
 	}ImGui::SameLine();

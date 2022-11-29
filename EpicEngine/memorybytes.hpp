@@ -11,8 +11,9 @@
 class Memoryview_t
 {
 public:
-	Memoryview_t() : addrpopup() {}
+	Memoryview_t() : addrpopup(), current_region_handle(), start_address(), columns_visible(), bytes_per_line(), process(){}
 	static void Render();
+	void RenderTabBar();
 	void OnWindowCreated();
 	void OnWindowKilled();
 	void OnRenderMemoryMap();

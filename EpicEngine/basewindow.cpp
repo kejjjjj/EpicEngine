@@ -245,6 +245,7 @@ bool MainWindow::Render(ImGuiIO& io, MSG& msg)
 
     hWnd_main.window.Pos = ImGui::GetWindowPos();
     hWnd_main.window.Size = ImGui::GetWindowSize();
+    window.active = ImGui::IsWindowFocused();
     window.CornerActionButtons();
 
 

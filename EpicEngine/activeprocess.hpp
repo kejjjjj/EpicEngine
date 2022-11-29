@@ -6,6 +6,10 @@
 #include "EpicEngine.h"
 
 
+struct module_u {
+	MODULEINFO module;
+	std::string name;
+};
 
 class ActiveProcess
 {
@@ -22,7 +26,7 @@ public:
 	bool ProcessRunning() const;
 	void OnProcessKilled();
 	static void MonitorActiveProcess();
-
+	bool FetchModules();
 	WProcess32 procdata;
 
 
@@ -31,8 +35,7 @@ public:
 		SIZE_T lpNumberOfBytesRead;
 	}memory;
 
-	template<typename t>
-	t read(const UPTR v, bool& failed) {
+	template<typename t> t read(const UPTR v, bool& failed) {
 
 		//object should have PROCESS_VM_READ flag
 		t end;
@@ -73,7 +76,7 @@ public:
 		return end;
 	}
 
-
+	std::vector<module_u> modules;
 private:
 };
 

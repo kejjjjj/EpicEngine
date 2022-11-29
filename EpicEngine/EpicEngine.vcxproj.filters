@@ -40,6 +40,9 @@
     <Filter Include="Source Files\memoryview">
       <UniqueIdentifier>{85c92bf9-1b8a-4a99-abbc-de8eea6cc973}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\modules">
+      <UniqueIdentifier>{0f37c391-e1bc-4157-b421-f080909215f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -120,6 +123,12 @@
     <ClInclude Include="memorybytes.hpp">
       <Filter>Source Files\memoryview</Filter>
     </ClInclude>
+    <ClInclude Include="inspectmodules.hpp">
+      <Filter>Source Files\modules</Filter>
+    </ClInclude>
+    <ClInclude Include="addressparser.hpp">
+      <Filter>Source Files\memoryview</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="EpicEngine.cpp">
@@ -186,6 +195,12 @@
       <Filter>Source Files\scanning</Filter>
     </ClCompile>
     <ClCompile Include="memorybytes.cpp">
+      <Filter>Source Files\memoryview</Filter>
+    </ClCompile>
+    <ClCompile Include="inspectmodules.cpp">
+      <Filter>Source Files\modules</Filter>
+    </ClCompile>
+    <ClCompile Include="addressparser.cpp">
       <Filter>Source Files\memoryview</Filter>
     </ClCompile>
   </ItemGroup>

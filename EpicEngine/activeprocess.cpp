@@ -38,3 +38,61 @@ void ActiveProcess::OnProcessKilled()
 
 	std::cout << "OnProcessKilled(): STILL_ACTIVE != TRUE\n";
 }
+bool ActiveProcess::FetchModules()
+{
+	HMODULE hMods[1024];
+	HANDLE hProcess;
+	DWORD cbNeeded;
+	DWORD i;
+
+	module_u mod;
+
+	CurrentProcess.modules.clear();
+
+	if (!procdata.handle)
+		return false;
+
+	if (K32EnumProcessModules(procdata.handle, hMods, sizeof(hMods), &cbNeeded)) {
+		const DWORD count = cbNeeded / sizeof(HMODULE);
+
+		for (i = 0; i < count; i++) {
+			char name[MAX_PATH];
+
+			if (K32GetModuleBaseNameA(procdata.handle, hMods[i], name, sizeof(name) / sizeof(char))) {
+
+				if (name[0] != '\0') {
+
+					mod.name = name;
+					if(!K32GetModuleInformation(procdata.handle, hMods[i], &mod.module, sizeof(MODULEINFO)))
+						continue;
+
+					modules.push_back(mod);
+				}
+				continue;
+			}
+			else {
+				std::cout << "Error: GetModuleFileNameA(): " << fs::_GetLastError() << '\n';
+
+			}
+
+		}
+
+	}
+	else {
+		std::cout << "Error: K32EnumProcessModules(): " << fs::_GetLastError() << '\n';
+
+	}
+
+	return !modules.empty();
+
+}
+void a(int b)
+{
+	std::cout << b;
+	return;
+}
+
+
+int main()
+{
+}

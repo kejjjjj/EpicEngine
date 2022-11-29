@@ -53,8 +53,10 @@ typedef unsigned long UPTR;
 #include "basewindow.hpp"
 #include "main_window.hpp"
 #include "scanwindow.hpp"
-#include "memorybytes.hpp"
 #include "activeprocess.hpp"
+#include "addressparser.hpp"
+#include "memorybytes.hpp"
+#include "inspectmodules.hpp"
 //#define STB_IMAGE_IMPLEMENTATION
 //#include "stb_image.h"
 
