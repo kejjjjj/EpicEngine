@@ -19,6 +19,7 @@ public:
 	void OnRenderMemoryMap();
 	void OnRenderMemoryMapContents();
 	void OnGoToAddress();
+	void OnSetActiveAddress(void* point);
 	struct addresspopup {
 		AppWindow window;
 
@@ -26,12 +27,12 @@ public:
 	void OnInvalidateData();
 	AppWindow window;
 	WProcess32* process;
+	void* start_address; //first window offset starts here
 
 private:
-	void* start_address; //first window offset starts here
 	UPTR bytes_per_line;
 	USHORT columns_visible;
-	void* current_region_handle; //current module in the window
+	module_u* current_region_handle; //current module in the window
 };
 
 inline Memoryview_t MemoryView;

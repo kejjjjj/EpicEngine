@@ -203,6 +203,7 @@ void ProcessWindow::OnProcessSelected(WProcess32 process)
 	MemoryView.process = &CurrentProcess.procdata;
 	OnCloseAllHandles(&process);
 	OnKillWindow();
+	CurrentProcess.FetchModules();
 }
 void ProcessWindow::OnCreateWindow()
 {

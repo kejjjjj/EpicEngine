@@ -35,6 +35,8 @@ public:
 		SIZE_T lpNumberOfBytesRead;
 	}memory;
 
+	module_u* FetchModuleFromAddress(const UPTR addr);
+
 	template<typename t> t read(const UPTR v, bool& failed) {
 
 		//object should have PROCESS_VM_READ flag

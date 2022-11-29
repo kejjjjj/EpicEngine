@@ -30,11 +30,17 @@ public:
 	struct token_t {
 		token_t() : content(), _operator('\0'), value(0) {}
 
-		token_t& operator=(token_t a) {
+		token_t operator=(token_t a) {
 			content = a.content;
 			_operator = a._operator;
 			value = a.value;
 		}
+		token_t(std::string token, char a_operator) {
+			content = token;
+			_operator = a_operator;
+			value = 0;
+		}
+
 		std::string content;
 		char _operator;
 		UPTR value;

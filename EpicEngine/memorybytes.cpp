@@ -50,7 +50,8 @@ void Memoryview_t::OnWindowCreated()
 	if(!start_address)
 		start_address = process->handle != nullptr ? process->module : 0;
 
-	current_region_handle = process->module;
+	current_region_handle = CurrentProcess.FetchModuleFromAddress((UPTR)start_address);
+
 	this->window.open = true;
 
 }
@@ -67,7 +68,7 @@ void Memoryview_t::OnRenderMemoryMap()
 
 	const ImVec2 fp = ImGui::GetStyle().FramePadding;
 
-	std::string addr = std::format("Address: {:x} | {}", (UPTR)start_address, process->name);
+	std::string addr = std::format("Address: {:x} | {}", (UPTR)start_address, current_region_handle != nullptr ?  current_region_handle->name : "N/A");
 	ImGui::TextCentered(addr.c_str());
 
 	const float itemHeight = ImGui::GetItemRectSize().y;
@@ -96,9 +97,13 @@ void Memoryview_t::OnRenderMemoryMap()
 	if (window.active) {
 		if (io->MouseWheel < 0) {
 			start_address = (void*)((UPTR)start_address + bytes_per_line);
+			current_region_handle = CurrentProcess.FetchModuleFromAddress((UPTR)start_address);
+
 		}
 		else if (io->MouseWheel > 0) {
 			start_address = (void*)((UPTR)start_address - bytes_per_line);
+			current_region_handle = CurrentProcess.FetchModuleFromAddress((UPTR)start_address);
+
 		}
 	}
 
@@ -210,5 +215,16 @@ void Memoryview_t::OnGoToAddress()
 	addrpopup.window.Size = ImGui::GetWindowSize();
 
 	ImGui::End();
+
+}
+void Memoryview_t::OnSetActiveAddress(void* point)
+{
+	current_region_handle = CurrentProcess.FetchModuleFromAddress((UPTR)point);
+
+	if (!current_region_handle)
+		return;
+
+	start_address = point;
+
 
 }

@@ -86,13 +86,12 @@ bool ActiveProcess::FetchModules()
 	return !modules.empty();
 
 }
-void a(int b)
+module_u* ActiveProcess::FetchModuleFromAddress(const UPTR addr)
 {
-	std::cout << b;
-	return;
-}
-
-
-int main()
-{
+	for (auto& i : modules) {
+		if (addr >= (UPTR)i.module.lpBaseOfDll && addr <= ((UPTR)i.module.lpBaseOfDll + (UPTR)i.module.SizeOfImage)) {
+			return &i;
+		}
+	}
+	return 0;
 }

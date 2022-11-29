@@ -6,20 +6,22 @@ UPTR AddressParser::Parse()
 		return 0;
 	}
 
-	const auto TokenizeString = [](std::string str, std::vector<token_t>& tokens, char d1 = '\0', char d2 = '\0', char d3 = '\0', char d4 = '\0') -> SIZE_T {
+	const auto TokenizeString = [](std::string str, std::vector<token_t>& tokens, char d1 = '\0', char d2 = '\0', char d3 = '\0', char d4 = '\0', char d5 = '\0') -> SIZE_T {
 		
 		//std::stringstream ss(str);
 		std::string token;
 
 		for (auto& i : str) {
 		//	std::cout << "i: " << i << '\n';
-			if (i != d1 && i != d2 && i != d3 && i != d4) 
+			if (i != d1 && i != d2 && i != d3 && i != d4 && i != d5)  
 				token.push_back(i);
 			else {
 				
 				//token.push_back(token_t{token, i});
-				tokens.push_back({ token, i });
-				token.clear();
+				if (i != d5) {
+					tokens.push_back(token_t{ token, i });
+					token.clear();
+				}
 			}
 		}
 		tokens.push_back({ token, '\0'});
@@ -27,9 +29,15 @@ UPTR AddressParser::Parse()
 		return tokens.size();
 	};
 
+	const auto TokenError = [](token_t* token) -> void {
+		char buff[MAX_PATH];
+		sprintf_s(buff, "EvaluateToken(): Invalid token passed: '%s'", token->content.c_str());
+		MessageBoxA(NULL, buff, "Error", MB_ICONERROR);
+	};
+
 	std::vector<token_t> tokens;
 
-	SIZE_T token_count = TokenizeString(input, tokens, '+', '-', '*', '/');
+	SIZE_T token_count = TokenizeString(input, tokens, '+', '-', '*', '/', ' ');
 
 	UPTR result(0);
 
@@ -39,20 +47,16 @@ UPTR AddressParser::Parse()
 		token_t token = tokens[count];
 
 		if (!EvaluateToken(&token)) {
-			char buff[MAX_PATH];
-			sprintf_s(buff, "EvaluateToken(): Invalid token passed: '%s'", token.content.c_str());
-			MessageBoxA(NULL, buff, "Error", MB_ICONERROR);
+			TokenError(&token);
 			return 0;
 		}
-
-		//if (token_count == 1)
-		//	result += token.value;
 
 		if (token._operator != '\0' && count < token_count-1) { //has operator and is not the last token
 			token_t next_token = tokens[count + 1];
 
 			if (!EvaluateToken(&next_token)) {
-				return 0;
+				TokenError(&next_token);
+
 			}
 
 			result += EvaluateExpression(&token, &next_token, token._operator);
@@ -75,6 +79,7 @@ UPTR AddressParser::Parse()
 	}
 
 	std::cout << "end result: " << std::hex << result << '\n';
+	MemoryView.start_address = (void*)result;
 
 	return 1;
 
@@ -100,9 +105,9 @@ bool AddressParser::EvaluateToken(token_t* token)
 		if ((i >= 'a' && i <= 'f') || (i >= 'A' && i <= 'F') || (i >= '0' && i <= '9')) //is hexadecimal if true
 			continue;
 
-		char buff[MAX_PATH];
-		sprintf_s(buff, "EvaluateToken(): Invalid token passed: '%s'", token->content.c_str());
-		MessageBoxA(NULL, buff, "Error", MB_ICONERROR);
+		//char buff[MAX_PATH];
+		//sprintf_s(buff, "EvaluateToken(): Invalid token passed: '%s'", token->content.c_str());
+		//MessageBoxA(NULL, buff, "Error", MB_ICONERROR);
 		return 0;
 
 	}

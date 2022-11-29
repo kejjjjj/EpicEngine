@@ -72,24 +72,24 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>E:\EpicEngine\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>D:\EpicEngine\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)86</TargetName>
     <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>E:\EpicEngine\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>D:\EpicEngine\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)86</TargetName>
     <IntDir>$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>E:\EpicEngine\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>D:\EpicEngine\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)64</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>E:\EpicEngine\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>D:\EpicEngine\$(Platform)\$(Configuration)\</OutDir>
     <TargetName>$(ProjectName)64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -108,7 +108,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d11.lib;D3DX11.lib;Winmm.lib;oleaut32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>E:\EpicEngine\$(Platform)\Release\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>D:\EpicEngine\$(Platform)\Release\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -131,7 +131,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d11.lib;D3DX11.lib;Winmm.lib;oleaut32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>E:\EpicEngine\$(Platform)\Release\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>D:\EpicEngine\$(Platform)\Release\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -150,7 +150,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;$(SolutionDir)/EpicEngine/Inc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d11.lib;D3DX11.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>E:\EpicEngine\x64\Release\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>D:\EpicEngine\x64\Release\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -173,7 +173,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)/Lib/x64;$(SolutionDir)/EpicEngine/Inc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>d3d11.lib;D3DX11.lib;Winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>E:\EpicEngine\x64\Release\$(TargetName)$(TargetExt)</OutputFile>
+      <OutputFile>D:\EpicEngine\x64\Release\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
